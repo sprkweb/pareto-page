@@ -20,41 +20,52 @@ class ParetoChart {
     #graph;
     #divider;
     #axes;
+    #selectedArea;
 
-    constructor (svgElem) {
+    constructor (svgElem, graphParams) {
         this.#svg = svgElem
-        this.#graph = new Graph(ParetoMaths.InverseCumulativeDistribution)
-        this.#divider = new VerticalDivider(0.8, this.#svg)
+        this.#graph = new Graph(graphParams)
+        this.#divider = new VerticalDivider(this.#svg, graphParams.defaultPos)
         this.#axes = new Axes()
+        this.#selectedArea = new SelectedArea(graphParams.defaultPos)
+        this.#divider.onUpdatePos = (newPos) => {
+            this.#selectedArea.pos = newPos
+        }
         this.#svg.appendChild(this.#graph.elem)
         this.#svg.appendChild(this.#divider.elem)
         this.#svg.appendChild(this.#axes.elem)
+        this.#svg.appendChild(this.#selectedArea.elem)
     }
 
-    draw (options) {
-        const { width, height, legendHeight } = options
-        this.#graph.drawElem(options)
-        this.#divider.drawElem(options)
-        this.#axes.drawElem(options)
+    draw (canvasParams) {
+        const { width, height, legendHeight } = canvasParams
+        this.#graph.drawElem(canvasParams)
+        this.#divider.drawElem(canvasParams)
+        this.#axes.drawElem(canvasParams)
+        this.#selectedArea.drawElem(canvasParams)
         this.#svg.setAttribute('viewBox', `0 0 ${width} ${height + legendHeight}`);
     }
 }
 
 class Graph {
     _elem;
-    #f;
+    _startX;
+    _endX;
+    _precision;
 
-    constructor (f) {
+    constructor (graphParams) {
         this._createElem()
-        this.#f = f
+        this._startX = graphParams.startX
+        this._endX = graphParams.endX
+        this._precision = graphParams.precision
     }
 
     get elem () {
         return this._elem
     }
 
-    drawElem ({ startX, endX, precision, width, height }) {
-        const path = this.#getSVGpath(startX, endX, precision, width, height)
+    drawElem ({ width, height }) {
+        const path = this.#getSVGpath(width, height)
         this._elem.setAttribute('d', this.#path2str(path))
     }
 
@@ -63,15 +74,15 @@ class Graph {
         this._elem.setAttribute('class', 'chart-line')
     }
 
-    #getSVGpath (startX, endX, precision, width, height) {
+    #getSVGpath (width, height) {
         let path = []
         let maxY = 0
-        for (let curX = startX; curX < endX; curX += precision) {
-            const y = this.#f(curX)
+        for (let curX = this._startX; curX < this._endX; curX += this._precision) {
+            const y = ParetoMaths.InverseCumulativeDistribution(curX)
             path.push([curX, y])
             if (y > maxY) maxY = y
         }
-        const xScale = width / (endX - startX)
+        const xScale = width / (this._endX - this._startX)
         return path.map((point) => [
             point[0] * xScale - path[0][0] * xScale,
             (1 - point[1] / maxY) * height
@@ -90,8 +101,9 @@ class Graph {
 class VerticalDivider {
     #pos;
     #svgElem;
+    onUpdatePos = () => {};
 
-    constructor (defaultPos, svgElem) {
+    constructor (svgElem, defaultPos) {
         this.#pos = defaultPos
         this.#svgElem = svgElem
         this._createElem()
@@ -142,6 +154,7 @@ class VerticalDivider {
     _updatePos (x) {
         this._updateElemsPos(x)
         this.#pos = x / this._width
+        this.onUpdatePos(this.#pos)
     }
 
     _updateElemsPos (x) {
@@ -149,7 +162,7 @@ class VerticalDivider {
         this._elemLine.setAttribute('x2', x)
         this._elemHandle.setAttribute('x', x)
         this._elemLinePos.setAttribute('x', x)
-        this._elemLinePos.innerHTML = Math.round(this.#pos * 100) + '%'
+        this._elemLinePos.innerHTML = Math.floor(this.#pos * 100) + '%'
     }
 }
 
@@ -175,23 +188,60 @@ class Axes {
     }
 }
 
+class SelectedArea {
+    #pos;
+    #canvasParams
+
+    constructor (defaultPos) {
+        this._createElem()
+        this.#pos = defaultPos
+    }
+
+    set pos (val) {
+        this.#pos = val
+        this._updatePos()
+    }
+
+    get elem () {
+        return this._elem
+    }
+
+    drawElem (canvasParams) {
+        this.#canvasParams = canvasParams
+        this._elem.setAttribute('y', this.#canvasParams.height)
+        this._updatePos()
+    }
+
+    _createElem () {
+        this._elem = document.createElementNS(NS.SVG, 'text');
+    }
+
+    _updatePos () {
+        this._elem.setAttribute('x', (this.#pos / 2) * this.#canvasParams.width)
+        const area = ParetoMaths.LorenzCurve(this.#pos)
+        this._elem.innerHTML = Math.round(area * 100) + '%'
+    }
+}
+
 let chartWrapper, chart
+const legendHeight = 30
 
 function refreshChart () {
     const { height, width } = chartWrapper.getBoundingClientRect();
-    const legendHeight = 30
     chart.draw({
         height: height - legendHeight,
         width,
-        legendHeight,
-        startX: 0,
-        endX: 0.99,
-        precision: 0.005
+        legendHeight
     })
 }
 window.addEventListener('load', function() {
     chartWrapper = document.getElementById('chart')
-    chart = new ParetoChart(document.querySelector('#chart > svg'))
+    chart = new ParetoChart(document.querySelector('#chart > svg'), {
+        startX: 0,
+        endX: 0.99,
+        precision: 0.005,
+        defaultPos: 0.8
+    })
     refreshChart()
 })
 window.addEventListener('resize', function() {
