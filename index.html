@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.css">
     <link rel="stylesheet" href="style.css">
 
-    <script src="script.js" defer></script>
+    <script src="script.js"></script>
 </head>
 <body>
     <main class="main">
@@ -19,7 +19,14 @@
 
         <div class="chart-section">
             <div id="chart">
-                <svg preserveAspectRatio="none"></svg>
+                <svg preserveAspectRatio="none">
+                    <defs>
+                        <g id="divider-handle" class="divider-handle">
+                            <polygon points="32,16 20,0 20,32 "/>
+                            <polygon points="0,16 12,0 12,32 "/>
+                        </g>
+                    </defs>
+                </svg>
             </div>
         </div>
 

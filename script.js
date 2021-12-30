@@ -17,42 +17,45 @@ const NS = {
 class ParetoChart {
     #svg;
     #graph;
+    #divider;
 
     constructor (svgElem) {
         this.#svg = svgElem
         this.#graph = new Graph(ParetoMaths.InverseCumulativeDistribution)
+        this.#divider = new VerticalDivider(0.8)
         this.#svg.appendChild(this.#graph.elem)
+        this.#svg.appendChild(this.#divider.elem)
     }
 
     draw (options) {
         const { width, height } = options
         this.#graph.drawElem(options)
+        this.#divider.drawElem(options)
         this.#svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
     }
 }
 
 class Graph {
-    #elem;
+    _elem;
     #f;
 
     constructor (f) {
+        this._createElem()
         this.#f = f
-        this.#createElem()
     }
 
     get elem () {
-        return this.#elem
+        return this._elem
     }
 
     drawElem ({ startX, endX, precision, width, height }) {
-        if (!this.#elem) this.#createElem()
         const path = this.#getSVGpath(startX, endX, precision, width, height)
-        this.#elem.setAttribute('d', this.#path2str(path))
+        this._elem.setAttribute('d', this.#path2str(path))
     }
 
-    #createElem () {
-        this.#elem = document.createElementNS(NS.SVG, 'path');
-        this.#elem.setAttribute('class', 'chart-line')
+    _createElem () {
+        this._elem = document.createElementNS(NS.SVG, 'path');
+        this._elem.setAttribute('class', 'chart-line')
     }
 
     #getSVGpath (startX, endX, precision, width, height) {
@@ -79,15 +82,44 @@ class Graph {
     }
 }
 
-const chartWrapper = document.getElementById('chart')
-const chart = new ParetoChart(document.querySelector('#chart > svg'))
+
+class VerticalDivider {
+    #pos;
+
+    constructor (defaultPos) {
+        this._createElem()
+        this.#pos = defaultPos
+    }
+
+    get elem () {
+        return this._elem
+    }
+
+    drawElem ({ width, height }) {
+        const x = width * this.#pos
+        this._elem.setAttribute('x1', x)
+        this._elem.setAttribute('x2', x)
+        this._elem.setAttribute('y2', height)
+    }
+
+    _createElem () {
+        this._elem = document.createElementNS(NS.SVG, 'line');
+        this._elem.setAttribute('class', 'divider')
+        this._elem.setAttribute('y1', 0)
+    }
+}
+
+let chartWrapper, chart
 
 function refreshChart () {
     const { height, width } = chartWrapper.getBoundingClientRect();
     chart.draw({ height, width, startX: 0, endX: 0.99, precision: 0.005 })
 }
-
-refreshChart()
+window.addEventListener('load', function() {
+    chartWrapper = document.getElementById('chart')
+    chart = new ParetoChart(document.querySelector('#chart > svg'))
+    refreshChart()
+})
 window.addEventListener('resize', function() {
     refreshChart()
 })
