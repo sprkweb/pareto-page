@@ -34,7 +34,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 #chart {
-    border-left: 3px solid hsl(0deg 0% 50%);
+    border-right: 3px solid hsl(0deg 0% 50%);
     border-bottom: 3px solid hsl(0deg 0% 50%);
     box-sizing: border-box;
     overflow: hidden;

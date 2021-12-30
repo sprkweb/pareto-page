@@ -2,6 +2,9 @@
 const k8020 = Math.log(5) / Math.log(4)
 
 const ParetoMaths = {
+    InverseCumulativeDistribution (F, x_m = 1, k = k8020) {
+        return x_m / (1 - F) ** (1 / k)
+    },
     LorenzCurve (F, k = k8020) {
         return 1 - (1 - F) ** (1 - 1 / k)
     }
@@ -12,19 +15,44 @@ const NS = {
 }
 
 class ParetoChart {
+    #svg;
+    #graph;
+
     constructor (svgElem) {
-        this._svg = svgElem
+        this.#svg = svgElem
+        this.#graph = new Graph(ParetoMaths.InverseCumulativeDistribution)
+        this.#svg.appendChild(this.#graph.elem)
     }
 
-    draw ({ startX = 1, endX = 10, precision = 0.1, width = 100, height = 100 }) {
-        this._svg.innerHTML = ''
+    draw (options) {
+        const { width, height } = options
+        this.#graph.drawElem(options)
+        this.#svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    }
+}
 
+class Graph {
+    #elem;
+    #f;
+
+    constructor (f) {
+        this.#f = f
+        this.#createElem()
+    }
+
+    get elem () {
+        return this.#elem
+    }
+
+    drawElem ({ startX, endX, precision, width, height }) {
+        if (!this.#elem) this.#createElem()
         const path = this.#getSVGpath(startX, endX, precision, width, height)
-        const pathEl = this._svg.appendChild(document.createElementNS(NS.SVG, 'path'));
-        pathEl.setAttribute('class', 'chart-line')
-        pathEl.setAttribute('d', this.#path2str(path))
+        this.#elem.setAttribute('d', this.#path2str(path))
+    }
 
-        this._svg.setAttribute('viewBox', `${path[0][0]} 0 ${width} ${height}`);
+    #createElem () {
+        this.#elem = document.createElementNS(NS.SVG, 'path');
+        this.#elem.setAttribute('class', 'chart-line')
     }
 
     #getSVGpath (startX, endX, precision, width, height) {
@@ -37,7 +65,7 @@ class ParetoChart {
         }
         const xScale = width / (endX - startX)
         return path.map((point) => [
-            point[0] * xScale,
+            point[0] * xScale - path[0][0] * xScale,
             (1 - point[1] / maxY) * height
         ])
     }
@@ -49,10 +77,6 @@ class ParetoChart {
                 .map((point) => 'L ' + point[0] + ' ' + point[1])
                 .join(' ')
     }
-
-    #f () {
-        return ParetoMaths.LorenzCurve(...arguments)
-    }
 }
 
 const chartWrapper = document.getElementById('chart')
@@ -60,10 +84,10 @@ const chart = new ParetoChart(document.querySelector('#chart > svg'))
 
 function refreshChart () {
     const { height, width } = chartWrapper.getBoundingClientRect();
-    chart.draw({ height, width, startX: 0, endX: 1, precision: 0.01 })
+    chart.draw({ height, width, startX: 0, endX: 0.99, precision: 0.005 })
 }
 
 refreshChart()
-window.addEventListener('resize', function(event) {
+window.addEventListener('resize', function() {
     refreshChart()
 })
