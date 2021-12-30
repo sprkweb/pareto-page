@@ -29,10 +29,10 @@ class ParetoChart {
     }
 
     draw (options) {
-        const { width, height } = options
+        const { width, height, legendHeight } = options
         this.#graph.drawElem(options)
         this.#divider.drawElem(options)
-        this.#svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+        this.#svg.setAttribute('viewBox', `0 0 ${width} ${height + legendHeight}`);
     }
 }
 
@@ -98,12 +98,12 @@ class VerticalDivider {
         return this._elem
     }
 
-    drawElem ({ width, height }) {
+    drawElem ({ width, height, legendHeight }) {
         const x = width * this.#pos
-        this._elemLine.setAttribute('x1', x)
-        this._elemLine.setAttribute('x2', x)
         this._elemLine.setAttribute('y2', height)
-        this._elemHandle.setAttribute('x', x)
+        this._elemLinePos.setAttribute('y', height + legendHeight)
+        this._updateElemsPos(x)
+        this._width = width
     }
 
     _createElem () {
@@ -113,8 +113,10 @@ class VerticalDivider {
         this._elemLine.setAttribute('y1', 0)
         this._elemHandle = document.createElementNS(NS.SVG, 'use');
         this._elemHandle.setAttributeNS(NS.XLINK, 'href', '#divider-handle');
+        this._elemLinePos = document.createElementNS(NS.SVG, 'text');
         this.elem.appendChild(this._elemLine)
         this.elem.appendChild(this._elemHandle)
+        this.elem.appendChild(this._elemLinePos)
         this._addDraggable()
     }
 
@@ -135,9 +137,16 @@ class VerticalDivider {
     }
 
     _updatePos (x) {
+        this._updateElemsPos(x)
+        this.#pos = x / this._width
+    }
+
+    _updateElemsPos (x) {
         this._elemLine.setAttribute('x1', x)
         this._elemLine.setAttribute('x2', x)
         this._elemHandle.setAttribute('x', x)
+        this._elemLinePos.setAttribute('x', x)
+        this._elemLinePos.innerHTML = Math.round(this.#pos * 100) + '%'
     }
 }
 
@@ -145,7 +154,15 @@ let chartWrapper, chart
 
 function refreshChart () {
     const { height, width } = chartWrapper.getBoundingClientRect();
-    chart.draw({ height, width, startX: 0, endX: 0.99, precision: 0.005 })
+    const legendHeight = 50
+    chart.draw({
+        height: height - legendHeight,
+        width,
+        legendHeight,
+        startX: 0,
+        endX: 0.99,
+        precision: 0.005
+    })
 }
 window.addEventListener('load', function() {
     chartWrapper = document.getElementById('chart')
