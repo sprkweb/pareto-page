@@ -19,19 +19,23 @@ class ParetoChart {
     #svg;
     #graph;
     #divider;
+    #axes;
 
     constructor (svgElem) {
         this.#svg = svgElem
         this.#graph = new Graph(ParetoMaths.InverseCumulativeDistribution)
         this.#divider = new VerticalDivider(0.8, this.#svg)
+        this.#axes = new Axes()
         this.#svg.appendChild(this.#graph.elem)
         this.#svg.appendChild(this.#divider.elem)
+        this.#svg.appendChild(this.#axes.elem)
     }
 
     draw (options) {
         const { width, height, legendHeight } = options
         this.#graph.drawElem(options)
         this.#divider.drawElem(options)
+        this.#axes.drawElem(options)
         this.#svg.setAttribute('viewBox', `0 0 ${width} ${height + legendHeight}`);
     }
 }
@@ -82,7 +86,6 @@ class Graph {
                 .join(' ')
     }
 }
-
 
 class VerticalDivider {
     #pos;
@@ -150,11 +153,33 @@ class VerticalDivider {
     }
 }
 
+class Axes {
+    constructor () {
+        this._createElem()
+    }
+
+    get elem () {
+        return this._elem
+    }
+
+    drawElem ({ width, height }) {
+        this._elem.setAttribute('y1', height)
+        this._elem.setAttribute('y2', height)
+        this._elem.setAttribute('x1', 0)
+        this._elem.setAttribute('x2', width)
+    }
+
+    _createElem () {
+        this._elem = document.createElementNS(NS.SVG, 'line');
+        this._elem.setAttribute('class', 'axis')
+    }
+}
+
 let chartWrapper, chart
 
 function refreshChart () {
     const { height, width } = chartWrapper.getBoundingClientRect();
-    const legendHeight = 50
+    const legendHeight = 30
     chart.draw({
         height: height - legendHeight,
         width,
