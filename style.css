@@ -42,13 +42,23 @@ h1, h2, h3, h4, h5, h6 {
 
 #chart .chart-line {
     fill: transparent;
-    stroke: black;
+    stroke: hsl(0deg 0% 25%);
     stroke-width: 3;
 }
 
+#chart .divider, #chart .divider-handle {
+    stroke: hsl(0deg 0% 50%);
+    cursor: move;
+}
+
 #chart .divider {
-    stroke: black;
     stroke-width: 3;
+    cursor: move;
+}
+
+#chart .divider-handle {
+    stroke-width: 2;
+    fill: transparent;
 }
 
 .content {

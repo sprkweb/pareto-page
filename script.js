@@ -11,7 +11,8 @@ const ParetoMaths = {
 }
 
 const NS = {
-    SVG: 'http://www.w3.org/2000/svg'
+    SVG: 'http://www.w3.org/2000/svg',
+    XLINK: 'http://www.w3.org/1999/xlink'
 }
 
 class ParetoChart {
@@ -22,7 +23,7 @@ class ParetoChart {
     constructor (svgElem) {
         this.#svg = svgElem
         this.#graph = new Graph(ParetoMaths.InverseCumulativeDistribution)
-        this.#divider = new VerticalDivider(0.8)
+        this.#divider = new VerticalDivider(0.8, this.#svg)
         this.#svg.appendChild(this.#graph.elem)
         this.#svg.appendChild(this.#divider.elem)
     }
@@ -85,10 +86,12 @@ class Graph {
 
 class VerticalDivider {
     #pos;
+    #svgElem;
 
-    constructor (defaultPos) {
-        this._createElem()
+    constructor (defaultPos, svgElem) {
         this.#pos = defaultPos
+        this.#svgElem = svgElem
+        this._createElem()
     }
 
     get elem () {
@@ -97,15 +100,44 @@ class VerticalDivider {
 
     drawElem ({ width, height }) {
         const x = width * this.#pos
-        this._elem.setAttribute('x1', x)
-        this._elem.setAttribute('x2', x)
-        this._elem.setAttribute('y2', height)
+        this._elemLine.setAttribute('x1', x)
+        this._elemLine.setAttribute('x2', x)
+        this._elemLine.setAttribute('y2', height)
+        this._elemHandle.setAttribute('x', x)
     }
 
     _createElem () {
-        this._elem = document.createElementNS(NS.SVG, 'line');
-        this._elem.setAttribute('class', 'divider')
-        this._elem.setAttribute('y1', 0)
+        this._elem = document.createElementNS(NS.SVG, 'g');
+        this._elemLine = document.createElementNS(NS.SVG, 'line');
+        this._elemLine.setAttribute('class', 'divider')
+        this._elemLine.setAttribute('y1', 0)
+        this._elemHandle = document.createElementNS(NS.SVG, 'use');
+        this._elemHandle.setAttributeNS(NS.XLINK, 'href', '#divider-handle');
+        this.elem.appendChild(this._elemLine)
+        this.elem.appendChild(this._elemHandle)
+        this._addDraggable()
+    }
+
+    _addDraggable () {
+        let drag = false
+        this.#svgElem.addEventListener('mousedown', (e) => {
+            drag = true
+            this._updatePos(e.offsetX)
+        })
+        this.#svgElem.addEventListener('mouseup', () => {
+            drag = false
+        })
+        this.#svgElem.addEventListener('mousemove', (e) => {
+            if (drag) {
+                this._updatePos(e.offsetX)
+            }
+        })
+    }
+
+    _updatePos (x) {
+        this._elemLine.setAttribute('x1', x)
+        this._elemLine.setAttribute('x2', x)
+        this._elemHandle.setAttribute('x', x)
     }
 }
 
