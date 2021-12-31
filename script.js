@@ -27,7 +27,7 @@ class ParetoChart {
         this.#graph = new Graph(graphParams)
         this.#divider = new VerticalDivider(this.#svg, graphParams.defaultPos)
         this.#axes = new Axes()
-        this.#selectedArea = new SelectedArea(graphParams.defaultPos)
+        this.#selectedArea = new SelectedArea(graphParams.defaultPos, this.#graph)
         this.#divider.onUpdatePos = (newPos) => {
             this.#selectedArea.pos = newPos
         }
@@ -49,23 +49,32 @@ class ParetoChart {
 
 class Graph {
     _elem;
-    _startX;
-    _endX;
-    _precision;
+    _graphParams;
+    _graphCache;
 
     constructor (graphParams) {
         this._createElem()
-        this._startX = graphParams.startX
-        this._endX = graphParams.endX
-        this._precision = graphParams.precision
+        this._graphParams = graphParams
     }
 
     get elem () {
         return this._elem
     }
 
+    getScaledGraph({ width, height }) {
+        const { path, maxY } = this.#getGraph()
+        return path.map((point) =>
+            this.#scalePoint(point, { width, height, maxY }))
+    }
+
+    getScaledPoint({ width, height }, x) {
+        const { maxY } = this.#getGraph()
+        const point = [x, ParetoMaths.InverseCumulativeDistribution(x)]
+        return this.#scalePoint(point, { maxY, width, height })
+    }
+
     drawElem ({ width, height }) {
-        const path = this.#getSVGpath(width, height)
+        const path = this.getScaledGraph({ width, height })
         this._elem.setAttribute('d', this.#path2str(path))
     }
 
@@ -74,19 +83,11 @@ class Graph {
         this._elem.setAttribute('class', 'chart-line')
     }
 
-    #getSVGpath (width, height) {
-        let path = []
-        let maxY = 0
-        for (let curX = this._startX; curX < this._endX; curX += this._precision) {
-            const y = ParetoMaths.InverseCumulativeDistribution(curX)
-            path.push([curX, y])
-            if (y > maxY) maxY = y
-        }
-        const xScale = width / (this._endX - this._startX)
-        return path.map((point) => [
-            point[0] * xScale - path[0][0] * xScale,
+    #scalePoint (point, { width, height, maxY }) {
+        return [
+            (point[0] - this._graphParams.startX) * width / (this._graphParams.endX - this._graphParams.startX),
             (1 - point[1] / maxY) * height
-        ])
+        ]
     }
 
     #path2str (path) {
@@ -95,6 +96,21 @@ class Graph {
                 .slice(1)
                 .map((point) => 'L ' + point[0] + ' ' + point[1])
                 .join(' ')
+    }
+
+    #getGraph () {
+        if (!this._graphCache) {
+            let path = []
+            let maxY = 0
+            const { endX, startX, precision } = this._graphParams
+            for (let curX = startX; curX < endX; curX += precision) {
+                const y = ParetoMaths.InverseCumulativeDistribution(curX)
+                path.push([curX, y])
+                if (y > maxY) maxY = y
+            }
+            this._graphCache = { path, maxY }
+        }
+        return this._graphCache
     }
 }
 
@@ -129,9 +145,9 @@ class VerticalDivider {
         this._elemHandle = document.createElementNS(NS.SVG, 'use');
         this._elemHandle.setAttributeNS(NS.XLINK, 'href', '#divider-handle');
         this._elemLinePos = document.createElementNS(NS.SVG, 'text');
-        this.elem.appendChild(this._elemLine)
-        this.elem.appendChild(this._elemHandle)
-        this.elem.appendChild(this._elemLinePos)
+        this._elem.appendChild(this._elemLine)
+        this._elem.appendChild(this._elemHandle)
+        this._elem.appendChild(this._elemLinePos)
         this._addDraggable()
     }
 
@@ -190,11 +206,13 @@ class Axes {
 
 class SelectedArea {
     #pos;
-    #canvasParams
+    #canvasParams;
+    #graph;
 
-    constructor (defaultPos) {
+    constructor (defaultPos, graph) {
         this._createElem()
         this.#pos = defaultPos
+        this.#graph = graph
     }
 
     set pos (val) {
@@ -208,18 +226,42 @@ class SelectedArea {
 
     drawElem (canvasParams) {
         this.#canvasParams = canvasParams
-        this._elem.setAttribute('y', this.#canvasParams.height)
         this._updatePos()
     }
 
     _createElem () {
-        this._elem = document.createElementNS(NS.SVG, 'text');
+        this._elem = document.createElementNS(NS.SVG, 'g');
+        this._elemLeftArea = document.createElementNS(NS.SVG, 'text');
+        this._elemRightArea = document.createElementNS(NS.SVG, 'text');
+        this._elem.appendChild(this._elemLeftArea)
+        this._elem.appendChild(this._elemRightArea)
     }
 
     _updatePos () {
-        this._elem.setAttribute('x', (this.#pos / 2) * this.#canvasParams.width)
         const area = ParetoMaths.LorenzCurve(this.#pos)
-        this._elem.innerHTML = Math.round(area * 100) + '%'
+        const { width, height, fontHeight } = this.#canvasParams
+        this._elemLeftArea.innerHTML = Math.round(area * 100) + '%'
+        this._elemRightArea.innerHTML = Math.round((1 - area) * 100) + '%'
+
+        const leftX = this.#pos / 2
+        const rightX = this.#pos + (1 - this.#pos) / 2
+        const leftPoint = this.#graph.getScaledPoint({ width, height }, leftX)
+        const rightPoint = this.#graph.getScaledPoint({ width, height }, rightX)
+
+        this._elemLeftArea.setAttribute('x',
+            leftPoint[0])
+        this._elemRightArea.setAttribute('x',
+            rightPoint[0])
+
+        if (height - leftPoint[1] > fontHeight + 6)
+            this._elemLeftArea.setAttribute('y', (leftPoint[1] + height + fontHeight) / 2)
+        else
+            this._elemLeftArea.setAttribute('y', leftPoint[1] - 5)
+
+        if (height - rightPoint[1] > fontHeight + 6)
+            this._elemRightArea.setAttribute('y', (rightPoint[1] + height + fontHeight) / 2)
+        else
+            this._elemRightArea.setAttribute('y', rightPoint[1] - 5)
     }
 }
 
@@ -231,7 +273,8 @@ function refreshChart () {
     chart.draw({
         height: height - legendHeight,
         width,
-        legendHeight
+        legendHeight,
+        fontHeight: 18
     })
 }
 window.addEventListener('load', function() {
