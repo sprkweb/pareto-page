@@ -27,7 +27,7 @@ class ParetoChart {
         this.#graph = new Graph(graphParams)
         this.#divider = new VerticalDivider(this.#svg, graphParams.defaultPos)
         this.#axes = new Axes()
-        this.#selectedArea = new SelectedArea(graphParams.defaultPos, this.#graph)
+        this.#selectedArea = new DistributionDisplay(graphParams.defaultPos, this.#graph)
         this.#divider.onUpdatePos = (newPos) => {
             this.#selectedArea.pos = newPos
         }
@@ -131,8 +131,7 @@ class VerticalDivider {
 
     drawElem ({ width, height, legendHeight }) {
         const x = width * this.#pos
-        this._elemLine.setAttribute('y2', height)
-        this._elemLinePos.setAttribute('y', height + legendHeight)
+        this._elemLine.setAttribute('y2', height + legendHeight)
         this._updateElemsPos(x)
         this._width = width
     }
@@ -144,10 +143,8 @@ class VerticalDivider {
         this._elemLine.setAttribute('y1', 0)
         this._elemHandle = document.createElementNS(NS.SVG, 'use');
         this._elemHandle.setAttributeNS(NS.XLINK, 'href', '#divider-handle');
-        this._elemLinePos = document.createElementNS(NS.SVG, 'text');
         this._elem.appendChild(this._elemLine)
         this._elem.appendChild(this._elemHandle)
-        this._elem.appendChild(this._elemLinePos)
         this._addDraggable()
     }
 
@@ -177,8 +174,6 @@ class VerticalDivider {
         this._elemLine.setAttribute('x1', x)
         this._elemLine.setAttribute('x2', x)
         this._elemHandle.setAttribute('x', x)
-        this._elemLinePos.setAttribute('x', x)
-        this._elemLinePos.innerHTML = Math.floor(this.#pos * 100) + '%'
     }
 }
 
@@ -204,7 +199,7 @@ class Axes {
     }
 }
 
-class SelectedArea {
+class DistributionDisplay {
     #pos;
     #canvasParams;
     #graph;
@@ -233,25 +228,31 @@ class SelectedArea {
         this._elem = document.createElementNS(NS.SVG, 'g');
         this._elemLeftArea = document.createElementNS(NS.SVG, 'text');
         this._elemRightArea = document.createElementNS(NS.SVG, 'text');
+        this._elemLeftX = document.createElementNS(NS.SVG, 'text');
+        this._elemRightX = document.createElementNS(NS.SVG, 'text');
         this._elem.appendChild(this._elemLeftArea)
         this._elem.appendChild(this._elemRightArea)
+        this._elem.appendChild(this._elemLeftX)
+        this._elem.appendChild(this._elemRightX)
     }
 
     _updatePos () {
-        const area = ParetoMaths.LorenzCurve(this.#pos)
-        const { width, height, fontHeight } = this.#canvasParams
-        this._elemLeftArea.innerHTML = Math.round(area * 100) + '%'
-        this._elemRightArea.innerHTML = Math.round((1 - area) * 100) + '%'
-
+        const { width, height, fontHeight, legendHeight } = this.#canvasParams
         const leftX = this.#pos / 2
         const rightX = this.#pos + (1 - this.#pos) / 2
         const leftPoint = this.#graph.getScaledPoint({ width, height }, leftX)
         const rightPoint = this.#graph.getScaledPoint({ width, height }, rightX)
+        const area = ParetoMaths.LorenzCurve(this.#pos)
 
-        this._elemLeftArea.setAttribute('x',
-            leftPoint[0])
-        this._elemRightArea.setAttribute('x',
-            rightPoint[0])
+
+        this._elemLeftX.setAttribute('x', leftPoint[0])
+        this._elemRightX.setAttribute('x', rightPoint[0])
+
+        this._elemLeftX.setAttribute('y', height + (legendHeight + fontHeight) / 2)
+        this._elemRightX.setAttribute('y', height + (legendHeight + fontHeight) / 2)
+
+        this._elemLeftArea.setAttribute('x', leftPoint[0])
+        this._elemRightArea.setAttribute('x', rightPoint[0])
 
         if (height - leftPoint[1] > fontHeight + 6)
             this._elemLeftArea.setAttribute('y', (leftPoint[1] + height + fontHeight) / 2)
@@ -262,6 +263,22 @@ class SelectedArea {
             this._elemRightArea.setAttribute('y', (rightPoint[1] + height + fontHeight) / 2)
         else
             this._elemRightArea.setAttribute('y', rightPoint[1] - 5)
+
+        if (this.#pos > 0.05) {
+            this._elemLeftX.innerHTML = Math.round(this.#pos * 100) + '%'
+            this._elemLeftArea.innerHTML = Math.round(area * 100) + '%'
+        } else {
+            this._elemLeftX.innerHTML = ''
+            this._elemLeftArea.innerHTML = ''
+        }
+
+        if (this.#pos < 0.95) {
+            this._elemRightX.innerHTML = Math.round((1 - this.#pos) * 100) + '%'
+            this._elemRightArea.innerHTML = Math.round((1 - area) * 100) + '%'
+        } else {
+            this._elemRightX.innerHTML = ''
+            this._elemRightArea.innerHTML = ''
+        }
     }
 }
 
