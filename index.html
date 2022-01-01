@@ -31,23 +31,48 @@
         </div>
 
         <footer>
-            <a href="#description">What is this?</a>
+            <a href="#description" class="show-more-link">
+                What is this?
+                <svg viewBox="0 0 30 10" width="30" height="10">
+                    <polyline class="arrow" points="1,0 15,9 29,0"/>
+                </svg>
+            </a>
         </footer>
     </main>
 
     <section class="content" id="description">
-        <h2>What is this</h2>
-        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dolore modi unde magni? Culpa aut, temporibus est fuga unde quis porro ipsam in sit voluptas reprehenderit praesentium! Atque quae quas placeat.</p>
-        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dolore modi unde magni? Culpa aut, temporibus est fuga unde quis porro ipsam in sit voluptas reprehenderit praesentium! Atque quae quas placeat.</p>
+        <h2>What is this?</h2>
+        <p>The above graph showcases Pareto distribution <a href="#link-1">[1]</a> (see <a href="#maths">the maths behind the graph</a>) in order to illustrate the Pareto principle (also known as "80-20 rule").</p>
+    </section>
+
+    <section class="content" id="meaning">
+        <h2>What is the Pareto principle?</h2>
+        <p></p>
+    </section>
+
+    <section class="content" id="meaning">
+        <h2>What does this mean for me?</h2>
+        <p></p>
+    </section>
+
+    <section class="content" id="maths">
+        <h2>What is on the graph from mathematical perspective?</h2>
+        <p>The chart may be a bit misleading as it shows nor probability density function neither cumulative distribution function. The best illustration for the Pareto principle is inverse cumulative distribution function (also known as the quantile function <a href="#link-2">[2]</a>) of the Pareto principle <a href="#link-1">[1]</a> <span style="color: red">EXPLAIN WHY</span></p>
+        <p style="color: red">Lorenz curve</p>
     </section>
 
     <section class="content" id="resources">
         <h2>Interesting links</h2>
-        <ul>
-            <li><a href="https://en.wikipedia.org/wiki/Pareto_distribution">Pareto distribution - Wikipedia</a></li>
-            <li><a href="http://bar">bar</a></li>
+        <ol>
+            <li id="link-1"><a href="https://en.wikipedia.org/wiki/Pareto_distribution">Pareto distribution - Wikipedia</a></li>
+            <li id="link-2"><a href="https://en.wikipedia.org/wiki/Quantile_function">Quantile function - Wikipedia</a></li>
             <li><a href="http://baz">baz</a></li>
-        </ul>
+        </ol>
+    </section>
+
+    <section class="content" id="author">
+        <p>Made by <a href="https://www.sprkweb.dev">Vadim Saprykin</a>.</p>
+        <p>The text on this page is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</p>
     </section>
 </body>
 </html>
