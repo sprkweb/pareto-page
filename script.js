@@ -20,21 +20,21 @@ class ParetoChart {
     #graph;
     #divider;
     #axes;
-    #selectedArea;
+    #distributionDisplay;
 
     constructor (svgElem, graphParams) {
         this.#svg = svgElem
         this.#graph = new Graph(graphParams)
         this.#divider = new VerticalDivider(this.#svg, graphParams.defaultPos)
         this.#axes = new Axes()
-        this.#selectedArea = new DistributionDisplay(graphParams.defaultPos, this.#graph)
+        this.#distributionDisplay = new DistributionDisplay(graphParams.defaultPos, this.#graph)
         this.#divider.onUpdatePos = (newPos) => {
-            this.#selectedArea.pos = newPos
+            this.#distributionDisplay.pos = newPos
         }
         this.#svg.appendChild(this.#graph.elem)
         this.#svg.appendChild(this.#divider.elem)
         this.#svg.appendChild(this.#axes.elem)
-        this.#svg.appendChild(this.#selectedArea.elem)
+        this.#svg.appendChild(this.#distributionDisplay.elem)
     }
 
     draw (canvasParams) {
@@ -42,7 +42,7 @@ class ParetoChart {
         this.#graph.drawElem(canvasParams)
         this.#divider.drawElem(canvasParams)
         this.#axes.drawElem(canvasParams)
-        this.#selectedArea.drawElem(canvasParams)
+        this.#distributionDisplay.drawElem(canvasParams)
         this.#svg.setAttribute('viewBox', `0 0 ${width} ${height + legendHeight}`);
     }
 }
@@ -59,6 +59,10 @@ class Graph {
 
     get elem () {
         return this._elem
+    }
+
+    get graphParams () {
+        return this._graphParams;
     }
 
     getScaledGraph({ width, height }) {
@@ -225,25 +229,28 @@ class DistributionDisplay {
     }
 
     _createElem () {
-        this._elem = document.createElementNS(NS.SVG, 'g');
-        this._elemLeftArea = document.createElementNS(NS.SVG, 'text');
-        this._elemRightArea = document.createElementNS(NS.SVG, 'text');
-        this._elemLeftX = document.createElementNS(NS.SVG, 'text');
-        this._elemRightX = document.createElementNS(NS.SVG, 'text');
-        this._elem.appendChild(this._elemLeftArea)
-        this._elem.appendChild(this._elemRightArea)
+        this._elem = document.createElementNS(NS.SVG, 'g')
+        this._elemLeftAreaNum = document.createElementNS(NS.SVG, 'text')
+        this._elemRightAreaNum = document.createElementNS(NS.SVG, 'text')
+        this._elemLeftX = document.createElementNS(NS.SVG, 'text')
+        this._elemRightX = document.createElementNS(NS.SVG, 'text')
+        this._elem.appendChild(this._elemLeftAreaNum)
+        this._elem.appendChild(this._elemRightAreaNum)
         this._elem.appendChild(this._elemLeftX)
         this._elem.appendChild(this._elemRightX)
     }
 
     _updatePos () {
+        this._updateDisplayedNumbersPos()
+        this._updateDisplayedNumbers()
+    }
+
+    _updateDisplayedNumbersPos () {
         const { width, height, fontHeight, legendHeight } = this.#canvasParams
         const leftX = this.#pos / 2
         const rightX = this.#pos + (1 - this.#pos) / 2
         const leftPoint = this.#graph.getScaledPoint({ width, height }, leftX)
         const rightPoint = this.#graph.getScaledPoint({ width, height }, rightX)
-        const area = ParetoMaths.LorenzCurve(this.#pos)
-
 
         this._elemLeftX.setAttribute('x', leftPoint[0])
         this._elemRightX.setAttribute('x', rightPoint[0])
@@ -251,33 +258,43 @@ class DistributionDisplay {
         this._elemLeftX.setAttribute('y', height + (legendHeight + fontHeight) / 2)
         this._elemRightX.setAttribute('y', height + (legendHeight + fontHeight) / 2)
 
-        this._elemLeftArea.setAttribute('x', leftPoint[0])
-        this._elemRightArea.setAttribute('x', rightPoint[0])
+        this._elemLeftAreaNum.setAttribute('x', leftPoint[0])
+        this._elemRightAreaNum.setAttribute('x', rightPoint[0])
 
         if (height - leftPoint[1] > fontHeight + 6)
-            this._elemLeftArea.setAttribute('y', (leftPoint[1] + height + fontHeight) / 2)
+            this._elemLeftAreaNum.setAttribute('y', (leftPoint[1] + height + fontHeight) / 2)
         else
-            this._elemLeftArea.setAttribute('y', leftPoint[1] - 5)
+            this._elemLeftAreaNum.setAttribute('y', leftPoint[1] - 5)
 
         if (height - rightPoint[1] > fontHeight + 6)
-            this._elemRightArea.setAttribute('y', (rightPoint[1] + height + fontHeight) / 2)
+            this._elemRightAreaNum.setAttribute('y', (rightPoint[1] + height + fontHeight) / 2)
         else
-            this._elemRightArea.setAttribute('y', rightPoint[1] - 5)
+            this._elemRightAreaNum.setAttribute('y', rightPoint[1] - 5)
+    }
 
-        if (this.#pos > 0.05) {
-            this._elemLeftX.innerHTML = Math.round(this.#pos * 100) + '%'
-            this._elemLeftArea.innerHTML = Math.round(area * 100) + '%'
-        } else {
+    _updateDisplayedNumbers () {
+        const area = ParetoMaths.LorenzCurve(this.#pos)
+
+        const leftPos = this.#pos * 100
+        const leftArea = area * 100
+        const rightPos = (1 - this.#pos) * 100
+        const rightArea = (1 - area) * 100
+
+        if (this.#pos < 0.05) {
             this._elemLeftX.innerHTML = ''
-            this._elemLeftArea.innerHTML = ''
-        }
-
-        if (this.#pos < 0.95) {
-            this._elemRightX.innerHTML = Math.round((1 - this.#pos) * 100) + '%'
-            this._elemRightArea.innerHTML = Math.round((1 - area) * 100) + '%'
+            this._elemLeftAreaNum.innerHTML = ''
+            this._elemRightX.innerHTML = rightPos.toFixed(2) + '%'
+            this._elemRightAreaNum.innerHTML = rightArea.toFixed(2) + '%'
+        } else if (this.#pos < 0.95) {
+            this._elemLeftX.innerHTML = leftPos.toFixed(1) + '%'
+            this._elemLeftAreaNum.innerHTML = leftArea.toFixed(1) + '%'
+            this._elemRightX.innerHTML = rightPos.toFixed(1) + '%'
+            this._elemRightAreaNum.innerHTML = rightArea.toFixed(1) + '%'
         } else {
+            this._elemLeftX.innerHTML = leftPos.toFixed(2) + '%'
+            this._elemLeftAreaNum.innerHTML = leftArea.toFixed(2) + '%'
             this._elemRightX.innerHTML = ''
-            this._elemRightArea.innerHTML = ''
+            this._elemRightAreaNum.innerHTML = ''
         }
     }
 }
