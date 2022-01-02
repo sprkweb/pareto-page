@@ -24,17 +24,23 @@ class ParetoChart {
 
     constructor (svgElem, graphParams) {
         this.#svg = svgElem
+
+        const graphPath = document.createElementNS(NS.SVG, 'clipPath')
+        graphPath.setAttribute('id', 'graphPath')
         this.#graph = new Graph(graphParams)
+        graphPath.appendChild(this.#graph.elem)
+
         this.#divider = new VerticalDivider(this.#svg, graphParams.defaultPos)
         this.#axes = new Axes()
         this.#distributionDisplay = new DistributionDisplay(graphParams.defaultPos, this.#graph)
         this.#divider.onUpdatePos = (newPos) => {
             this.#distributionDisplay.pos = newPos
         }
-        this.#svg.appendChild(this.#graph.elem)
+
+        this.#svg.appendChild(graphPath)
+        this.#svg.appendChild(this.#distributionDisplay.elem)
         this.#svg.appendChild(this.#divider.elem)
         this.#svg.appendChild(this.#axes.elem)
-        this.#svg.appendChild(this.#distributionDisplay.elem)
     }
 
     draw (canvasParams) {
@@ -225,15 +231,26 @@ class DistributionDisplay {
 
     drawElem (canvasParams) {
         this.#canvasParams = canvasParams
+        this._elemLeftArea.setAttribute('height', canvasParams.height)
+        this._elemRightArea.setAttribute('height', canvasParams.height)
         this._updatePos()
     }
 
     _createElem () {
         this._elem = document.createElementNS(NS.SVG, 'g')
+        this._elemLeftArea = document.createElementNS(NS.SVG, 'rect')
+        this._elemRightArea = document.createElementNS(NS.SVG, 'rect')
+        this._elemLeftArea.setAttribute('class', 'left-area')
+        this._elemLeftArea.setAttribute('x', 0)
+        this._elemLeftArea.setAttribute('y', 0)
+        this._elemRightArea.setAttribute('class', 'right-area')
+        this._elemRightArea.setAttribute('y', 0)
         this._elemLeftAreaNum = document.createElementNS(NS.SVG, 'text')
         this._elemRightAreaNum = document.createElementNS(NS.SVG, 'text')
         this._elemLeftX = document.createElementNS(NS.SVG, 'text')
         this._elemRightX = document.createElementNS(NS.SVG, 'text')
+        this._elem.appendChild(this._elemLeftArea)
+        this._elem.appendChild(this._elemRightArea)
         this._elem.appendChild(this._elemLeftAreaNum)
         this._elem.appendChild(this._elemRightAreaNum)
         this._elem.appendChild(this._elemLeftX)
@@ -243,6 +260,7 @@ class DistributionDisplay {
     _updatePos () {
         this._updateDisplayedNumbersPos()
         this._updateDisplayedNumbers()
+        this._updateAreas()
     }
 
     _updateDisplayedNumbersPos () {
@@ -296,6 +314,13 @@ class DistributionDisplay {
             this._elemRightX.innerHTML = ''
             this._elemRightAreaNum.innerHTML = ''
         }
+    }
+
+    _updateAreas () {
+        const { width } = this.#canvasParams
+        this._elemLeftArea.setAttribute('width', this.#pos * width)
+        this._elemRightArea.setAttribute('x', this.#pos * width)
+        this._elemRightArea.setAttribute('width', (1 - this.#pos) * width)
     }
 }
 

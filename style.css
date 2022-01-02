@@ -87,13 +87,17 @@ h1, h2, h3, h4, h5, h6 {
     stroke-width: 3;
 }
 
-/* #chart .left-area {
+#chart .left-area, #chart .right-area {
+    clip-path: url(#graphPath);
+}
+
+#chart .left-area {
     fill: #5EFC8D;
 }
 
 #chart .right-area {
     fill: #8EF9F3;
-} */
+}
 
 #chart text {
     font-family: var(--font-family-sans);
