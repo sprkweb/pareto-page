@@ -66,20 +66,19 @@ class Graph {
     }
 
     getScaledGraph({ width, height }) {
-        const { path, maxY } = this.#getGraph()
+        const path = this.#getGraph()
         return path.map((point) =>
-            this.#scalePoint(point, { width, height, maxY }))
+            this.#scalePoint(point, { width, height }))
     }
 
     getScaledPoint({ width, height }, x) {
-        const { maxY } = this.#getGraph()
         const point = [x, ParetoMaths.InverseCumulativeDistribution(x)]
-        return this.#scalePoint(point, { maxY, width, height })
+        return this.#scalePoint(point, { width, height })
     }
 
     drawElem ({ width, height }) {
         const path = this.getScaledGraph({ width, height })
-        this._elem.setAttribute('d', this.#path2str(path))
+        this._elem.setAttribute('d', this.#path2str(path, { height }))
     }
 
     _createElem () {
@@ -87,32 +86,33 @@ class Graph {
         this._elem.setAttribute('class', 'chart-line')
     }
 
-    #scalePoint (point, { width, height, maxY }) {
+    #scalePoint (point, { width, height }) {
         return [
             (point[0] - this._graphParams.startX) * width / (this._graphParams.endX - this._graphParams.startX),
-            (1 - point[1] / maxY) * height
+            (1 - point[1] / this._graphParams.maxY) * height
         ]
     }
 
-    #path2str (path) {
-        return `M ${path[0][0]} ${path[0][1]} ` +
+    #path2str (path, { height }) {
+        return `M ${path[0][0]} ${height} ` +
             path
-                .slice(1)
                 .map((point) => 'L ' + point[0] + ' ' + point[1])
-                .join(' ')
+                .join(' ') +
+            `V ${height} Z`
     }
 
     #getGraph () {
         if (!this._graphCache) {
             let path = []
-            let maxY = 0
-            const { endX, startX, precision } = this._graphParams
-            for (let curX = startX; curX < endX; curX += precision) {
+            const { endX, startX, precision, maxY } = this._graphParams
+            for (let curX = startX; curX < endX + precision; curX += precision) {
                 const y = ParetoMaths.InverseCumulativeDistribution(curX)
-                path.push([curX, y])
-                if (y > maxY) maxY = y
+                path.push([
+                    curX,
+                    y < maxY ? y : maxY
+                ])
             }
-            this._graphCache = { path, maxY }
+            this._graphCache = path
         }
         return this._graphCache
     }
@@ -315,7 +315,8 @@ window.addEventListener('load', function() {
     chartWrapper = document.getElementById('chart')
     chart = new ParetoChart(document.querySelector('#chart > svg'), {
         startX: 0,
-        endX: 0.99,
+        endX: 1,
+        maxY: ParetoMaths.InverseCumulativeDistribution(0.99),
         precision: 0.005,
         defaultPos: 0.8
     })

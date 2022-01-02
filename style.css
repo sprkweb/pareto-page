@@ -64,9 +64,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 #chart .chart-line {
-    fill: transparent;
-    stroke: hsl(0deg 0% 25%);
-    stroke-width: 3;
+    fill: #8EF9F3;
 }
 
 #chart .divider, #chart .divider-handle {
@@ -88,6 +86,14 @@ h1, h2, h3, h4, h5, h6 {
     stroke: hsl(0deg 0% 50%);
     stroke-width: 3;
 }
+
+/* #chart .left-area {
+    fill: #5EFC8D;
+}
+
+#chart .right-area {
+    fill: #8EF9F3;
+} */
 
 #chart text {
     font-family: var(--font-family-sans);
