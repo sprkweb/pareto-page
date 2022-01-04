@@ -233,6 +233,9 @@ class DistributionDisplay {
         this.#canvasParams = canvasParams
         this._elemLeftArea.setAttribute('height', canvasParams.height)
         this._elemRightArea.setAttribute('height', canvasParams.height)
+        const arrowsY = canvasParams.height + canvasParams.legendHeight / 4
+        this._leftInterval.updateY(arrowsY)
+        this._rightInterval.updateY(arrowsY)
         this._updatePos()
     }
 
@@ -249,10 +252,14 @@ class DistributionDisplay {
         this._elemRightAreaNum = document.createElementNS(NS.SVG, 'text')
         this._elemLeftX = document.createElementNS(NS.SVG, 'text')
         this._elemRightX = document.createElementNS(NS.SVG, 'text')
+        this._leftInterval = new DoubleArrow()
+        this._rightInterval = new DoubleArrow()
         this._elem.appendChild(this._elemLeftArea)
         this._elem.appendChild(this._elemRightArea)
         this._elem.appendChild(this._elemLeftAreaNum)
         this._elem.appendChild(this._elemRightAreaNum)
+        this._elem.appendChild(this._leftInterval.elem)
+        this._elem.appendChild(this._rightInterval.elem)
         this._elem.appendChild(this._elemLeftX)
         this._elem.appendChild(this._elemRightX)
     }
@@ -261,6 +268,10 @@ class DistributionDisplay {
         this._updateDisplayedNumbersPos()
         this._updateDisplayedNumbers()
         this._updateAreas()
+        const { width } = this.#canvasParams
+        const gap = 5
+        this._leftInterval.updatePos({ leftX: gap, rightX: this.#pos * width - gap })
+        this._rightInterval.updatePos({ leftX: this.#pos * width + gap, rightX: width - gap })
     }
 
     _updateDisplayedNumbersPos () {
@@ -273,8 +284,8 @@ class DistributionDisplay {
         this._elemLeftX.setAttribute('x', leftPoint[0])
         this._elemRightX.setAttribute('x', rightPoint[0])
 
-        this._elemLeftX.setAttribute('y', height + (legendHeight + fontHeight) / 2)
-        this._elemRightX.setAttribute('y', height + (legendHeight + fontHeight) / 2)
+        this._elemLeftX.setAttribute('y', height + legendHeight)
+        this._elemRightX.setAttribute('y', height + legendHeight)
 
         this._elemLeftAreaNum.setAttribute('x', leftPoint[0])
         this._elemRightAreaNum.setAttribute('x', rightPoint[0])
@@ -303,16 +314,22 @@ class DistributionDisplay {
             this._elemLeftAreaNum.innerHTML = ''
             this._elemRightX.innerHTML = rightPos.toFixed(2) + '%'
             this._elemRightAreaNum.innerHTML = rightArea.toFixed(2) + '%'
+            this._leftInterval.hidden = true
+            this._rightInterval.hidden = false
         } else if (this.#pos < 0.95) {
             this._elemLeftX.innerHTML = leftPos.toFixed(1) + '%'
             this._elemLeftAreaNum.innerHTML = leftArea.toFixed(1) + '%'
             this._elemRightX.innerHTML = rightPos.toFixed(1) + '%'
             this._elemRightAreaNum.innerHTML = rightArea.toFixed(1) + '%'
+            this._leftInterval.hidden = false
+            this._rightInterval.hidden = false
         } else {
             this._elemLeftX.innerHTML = leftPos.toFixed(2) + '%'
             this._elemLeftAreaNum.innerHTML = leftArea.toFixed(2) + '%'
             this._elemRightX.innerHTML = ''
             this._elemRightAreaNum.innerHTML = ''
+            this._leftInterval.hidden = false
+            this._rightInterval.hidden = true
         }
     }
 
@@ -321,6 +338,58 @@ class DistributionDisplay {
         this._elemLeftArea.setAttribute('width', this.#pos * width)
         this._elemRightArea.setAttribute('x', this.#pos * width)
         this._elemRightArea.setAttribute('width', (1 - this.#pos) * width)
+    }
+}
+
+class DoubleArrow {
+    #hidden;
+
+    constructor () {
+        this.#hidden = false
+        this._createElem()
+    }
+
+    get elem () {
+        return this._elem
+    }
+
+    set hidden (val) {
+        if (val && !this.#hidden) {
+            this._elem.setAttribute('class', 'hidden')
+            this.#hidden = true
+        }
+        if (!val && this.#hidden) {
+            this._elem.setAttribute('class', 'x-interval')
+            this.#hidden = false
+        }
+    }
+
+    updatePos ({ leftX, rightX }) {
+        this._elemLeftArrow.setAttribute('x', leftX)
+        this._elemRightArrow.setAttribute('x', rightX)
+        this._elemLine.setAttribute('x1', leftX)
+        this._elemLine.setAttribute('x2', rightX)
+    }
+
+    updateY (y) {
+        this._elemLeftArrow.setAttribute('y', y)
+        this._elemRightArrow.setAttribute('y', y)
+        this._elemLine.setAttribute('y1', y)
+        this._elemLine.setAttribute('y2', y)
+    }
+
+    _createElem () {
+        this._elem = document.createElementNS(NS.SVG, 'g')
+        this._elem.setAttribute('class', 'x-interval')
+        this._elemLeftArrow = document.createElementNS(NS.SVG, 'use')
+        this._elemLeftArrow.setAttributeNS(NS.XLINK, 'href', '#left-arrow')
+        this._elemRightArrow = document.createElementNS(NS.SVG, 'use')
+        this._elemRightArrow.setAttributeNS(NS.XLINK, 'href', '#right-arrow')
+        this._elemLine = document.createElementNS(NS.SVG, 'line')
+        this._elemLine.setAttributeNS(NS.XLINK, 'href', '#right-arrow')
+        this._elem.appendChild(this._elemLeftArrow)
+        this._elem.appendChild(this._elemRightArrow)
+        this._elem.appendChild(this._elemLine)
     }
 }
 

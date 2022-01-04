@@ -99,11 +99,23 @@ h1, h2, h3, h4, h5, h6 {
     fill: #8EF9F3;
 }
 
+#chart .x-interval {
+    stroke: hsl(0deg 0% 50%);
+    stroke-width: 2;
+    fill: transparent;
+}
+
+#chart .hidden {
+    stroke: transparent;
+    fill: transparent;
+}
+
 #chart text {
     font-family: var(--font-family-sans);
     font-size: var(--font-size);
     font-weight: bold;
     text-anchor: middle;
+    user-select: none;
 }
 
 .content {
