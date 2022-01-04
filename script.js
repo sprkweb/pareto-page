@@ -41,6 +41,7 @@ class ParetoChart {
         this.#svg.appendChild(this.#distributionDisplay.elem)
         this.#svg.appendChild(this.#divider.elem)
         this.#svg.appendChild(this.#axes.elem)
+        this.#svg.appendChild(this.#graph.elemLine)
     }
 
     draw (canvasParams) {
@@ -67,6 +68,10 @@ class Graph {
         return this._elem
     }
 
+    get elemLine () {
+        return this._elemLine
+    }
+
     get graphParams () {
         return this._graphParams;
     }
@@ -84,12 +89,14 @@ class Graph {
 
     drawElem ({ width, height }) {
         const path = this.getScaledGraph({ width, height })
-        this._elem.setAttribute('d', this.#path2str(path, { height }))
+        this._elem.setAttribute('d', this.#polygonPath2str(path, { height }))
+        this._elemLine.setAttribute('d', this.#linePath2str(path, { height }))
     }
 
     _createElem () {
         this._elem = document.createElementNS(NS.SVG, 'path');
-        this._elem.setAttribute('class', 'chart-line')
+        this._elemLine = document.createElementNS(NS.SVG, 'path');
+        this._elemLine.setAttribute('class', 'chart-line')
     }
 
     #scalePoint (point, { width, height }) {
@@ -99,12 +106,26 @@ class Graph {
         ]
     }
 
-    #path2str (path, { height }) {
+    #polygonPath2str (path, { height }) {
         return `M ${path[0][0]} ${height} ` +
             path
-                .map((point) => 'L ' + point[0] + ' ' + point[1])
+                .map(([x, y]) => 'L ' + x + ' ' + y)
                 .join(' ') +
             `V ${height} Z`
+    }
+
+    #linePath2str (path) {
+        const { maxY } = this._graphParams
+        let result = ''
+        for (let i = 0; i < path.length; i++) {
+            if (i != 0) {
+                result += 'L ' + path[i][0] + ' ' + path[i][1]
+                if (path[i][1] == 0) break
+            } else {
+                result += 'M ' + path[i][0] + ' ' + path[i][1]
+            }
+        }
+        return result
     }
 
     #getGraph () {

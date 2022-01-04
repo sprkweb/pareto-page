@@ -64,7 +64,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 #chart .chart-line {
-    fill: #8EF9F3;
+    fill: transparent;
+    stroke: hsl(0deg 0% 50%);
+    stroke-width: 3;
 }
 
 #chart .divider, #chart .divider-handle {
