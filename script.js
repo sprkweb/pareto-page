@@ -32,7 +32,7 @@ class ParetoChart {
 
         this.#divider = new VerticalDivider(this.#svg, graphParams.defaultPos)
         this.#axes = new Axes()
-        this.#distributionDisplay = new DistributionDisplay(graphParams.defaultPos, this.#graph)
+        this.#distributionDisplay = new DistributionDisplay(graphParams, this.#graph)
         this.#divider.onUpdatePos = (newPos) => {
             this.#distributionDisplay.pos = newPos
         }
@@ -55,6 +55,7 @@ class ParetoChart {
 }
 
 class Graph {
+    _f;
     _elem;
     _graphParams;
     _graphCache;
@@ -83,7 +84,7 @@ class Graph {
     }
 
     getScaledPoint({ width, height }, x) {
-        const point = [x, ParetoMaths.InverseCumulativeDistribution(x)]
+        const point = [x, this._graphParams.graphF(x)]
         return this.#scalePoint(point, { width, height })
     }
 
@@ -133,7 +134,7 @@ class Graph {
             let path = []
             const { endX, startX, precision, maxY } = this._graphParams
             for (let curX = startX; curX < endX + precision; curX += precision) {
-                const y = ParetoMaths.InverseCumulativeDistribution(curX)
+                const y = this._graphParams.graphF(curX)
                 path.push([
                     curX,
                     y < maxY ? y : maxY
@@ -234,11 +235,14 @@ class DistributionDisplay {
     #pos;
     #canvasParams;
     #graph;
+    #areaF;
 
-    constructor (defaultPos, graph) {
+    constructor (graphParams, graph) {
+        const { defaultPos, areaF } = graphParams
         this._createElem()
         this.#pos = defaultPos
         this.#graph = graph
+        this.#areaF = areaF
     }
 
     set pos (val) {
@@ -323,7 +327,7 @@ class DistributionDisplay {
     }
 
     _updateDisplayedNumbers () {
-        const area = ParetoMaths.LorenzCurve(this.#pos)
+        const area = this.#areaF(this.#pos)
 
         const leftPos = this.#pos * 100
         const leftArea = area * 100
@@ -429,6 +433,8 @@ function refreshChart () {
 window.addEventListener('load', function() {
     chartWrapper = document.getElementById('chart')
     chart = new ParetoChart(document.querySelector('#chart > svg'), {
+        graphF: ParetoMaths.InverseCumulativeDistribution,
+        areaF: ParetoMaths.LorenzCurve,
         startX: 0,
         endX: 1,
         maxY: ParetoMaths.InverseCumulativeDistribution(0.99),
