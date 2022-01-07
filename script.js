@@ -121,7 +121,6 @@ class Graph {
         for (let i = 0; i < path.length; i++) {
             if (i != 0) {
                 result += 'L ' + path[i][0] + ' ' + path[i][1]
-                if (path[i][1] == 0) break
             } else {
                 result += 'M ' + path[i][0] + ' ' + path[i][1]
             }
@@ -137,7 +136,7 @@ class Graph {
                 const y = this._graphParams.graphF(curX)
                 path.push([
                     curX,
-                    y < maxY ? y : maxY
+                    y <= maxY ? y : maxY + 1
                 ])
             }
             this._graphCache = path
@@ -433,13 +432,13 @@ function refreshChart () {
 window.addEventListener('load', function() {
     chartWrapper = document.getElementById('chart')
     chart = new ParetoChart(document.querySelector('#chart > svg'), {
-        graphF: ParetoMaths.InverseCumulativeDistribution,
-        areaF: ParetoMaths.LorenzCurve,
+        graphF: (x) => ParetoMaths.InverseCumulativeDistribution(1 - x),
+        areaF: (x) => 1 - ParetoMaths.LorenzCurve(1 - x),
         startX: 0,
         endX: 1,
         maxY: ParetoMaths.InverseCumulativeDistribution(0.99),
         precision: 0.005,
-        defaultPos: 0.8
+        defaultPos: 0.2
     })
     refreshChart()
 })
