@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pareto principle</title>
+    <title>Принцип Парето</title>
 
     <link rel="icon" href="./favicon.ico" sizes="any">
     <link rel="icon" href="./icon.svg" type="image/svg+xml">
@@ -12,12 +12,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.css">
     <link rel="stylesheet" href="style.css">
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css" integrity="sha384-MlJdn/WNKDGXveldHDdyRP1R4CTHr3FeuDNfhsLPYrq2t0UBkUdK2jyTnXPEK1NQ" crossorigin="anonymous">
+
     <script src="script.js"></script>
 </head>
 <body>
     <main class="main">
         <header>
-            <h1>Pareto principle</h1>
+            <h1>Принцип Парето</h1>
         </header>
 
         <div class="chart-section">
@@ -36,48 +38,109 @@
         </div>
 
         <footer>
-            <!-- <a href="#description" class="show-more-link">
-                What is this?
+            <a href="#short-description" class="show-more-link">
+                Что это?
                 <svg viewBox="0 0 30 10" width="30" height="10">
                     <polyline class="arrow" points="1,0 15,9 29,0"/>
                 </svg>
-            </a> -->
+            </a>
         </footer>
     </main>
 
-    <!-- <section class="content" id="description">
-        <h2>What is this?</h2>
-        <p>The above graph showcases Pareto distribution <a href="#link-1">[1]</a> (see <a href="#maths">the maths behind the graph</a>) in order to illustrate the Pareto principle (also known as "80-20 rule").</p>
+
+
+
+
+
+    <section class="content" id="short-description">
+        <h2>Что это?</h2>
+        <p>На графике выше изображено <a href="https://en.wikipedia.org/wiki/Pareto_distribution">распределение Парето</a>
+            (см. <a href="#maths">математику, стоящую за графиком</a>),
+            которое иллюстрирует принцип Парето (также известный как “правило 80-20”).</p>
+    </section>
+
+    <section class="content" id="full-description">
+        <h2>Принцип Парето</h2>
+        <p>Принцип назван в честь экономиста Вильфредо Парето, который в
+            конце 19 века заметил, что примерно 80% земли в Италии принадлежало 20% населения <a href="#link-1">[1]</a>.</p>
+        <p>Впоследствии подобные закономерности стали замечать в других
+            областях. В широком смысле принцип можно сформулировать как “80%
+            последствий следуют из 20% причин” или “80% результата следуют из 20% усилий”. </p>
+        <p>Важно помнить, что все эти закономерности очень
+            приблизительные и являются наблюдениями, а не доказанными математическими, физическими или экономическими
+            законами.</p>
     </section>
 
     <section class="content" id="meaning">
-        <h2>What is the Pareto principle?</h2>
-        <p></p>
-    </section>
-
-    <section class="content" id="meaning">
-        <h2>What does this mean for me?</h2>
-        <p></p>
+        <h2>Что это значит для меня?</h2>
+        <p>Это распределение — математическая модель, которая сама по
+            себе ничего не значит. </p>
+        <p>Существует множество разных явлений и закономерностей, которые
+            приблизительно соответствуют этому распределению (и это разнообразие очень интересно!), и на основе них люди
+            могут делать предположения о будущих аналогичных событиях.</p>
     </section>
 
     <section class="content" id="maths">
-        <h2>What is on the graph from mathematical perspective?</h2>
-        <p>The chart may be a bit misleading as it shows nor probability density function neither cumulative distribution function. I think that the best illustration for the Pareto principle is inverse cumulative distribution function (also known as the quantile function <a href="#link-2">[2]</a>) <span style="color: red">EXPLAIN WHY</span></p>
-        <p style="color: red">Lorenz curve</p>
+        <!-- LaTeX is pre-generated with `npx katex [-d]` -->
+        <h2>Математические подробности графика</h2>
+        <p>Стоит отметить, что горизонтальная ось слева направо идёт от 1 (100%) к 0, то есть весь график зеркально отражен относительно обычного направления оси. Это сделано для более интуитивно понятного взаимодействия пользователей.</p>
+        <p>На графике изображена обратная функция распределения (также известная как квантиль-функция <a href="#link-2">[2]</a>) </p>
+
+        <!-- x(p)\,=\,Q(p)\,=\,\inf \left\{x\in {\mathbb  {R}}:p\leq F(x)\right\}=\frac{x_\mathrm{m}}{(1-p)^{\frac{1}{\alpha}}} -->
+        <span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>x</mi><mo stretchy="false">(</mo><mi>p</mi><mo stretchy="false">)</mo><mtext> </mtext><mo>=</mo><mtext> </mtext><mi>Q</mi><mo stretchy="false">(</mo><mi>p</mi><mo stretchy="false">)</mo><mtext> </mtext><mo>=</mo><mtext> </mtext><mi>inf</mi><mo>⁡</mo><mrow><mo fence="true">{</mo><mi>x</mi><mo>∈</mo><mi mathvariant="double-struck">R</mi><mo>:</mo><mi>p</mi><mo>≤</mo><mi>F</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo fence="true">}</mo></mrow><mo>=</mo><mfrac><msub><mi>x</mi><mi mathvariant="normal">m</mi></msub><mrow><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><msup><mo stretchy="false">)</mo><mfrac><mn>1</mn><mi>α</mi></mfrac></msup></mrow></mfrac></mrow><annotation encoding="application/x-tex">x(p)\,=\,Q(p)\,=\,\inf \left\{x\in {\mathbb  {R}}:p\leq F(x)\right\}=\frac{x_\mathrm{m}}{(1-p)^{\frac{1}{\alpha}}}
+        </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">x</span><span class="mopen">(</span><span class="mord mathnormal">p</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">Q</span><span class="mopen">(</span><span class="mord mathnormal">p</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mop">in<span style="margin-right:0.07778em;">f</span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;">{</span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord"><span class="mord mathbb">R</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord mathnormal">p</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≤</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">F</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mclose">)</span><span class="mclose delimcenter" style="top:0em;">}</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.1871em;vertical-align:-1.0796em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.1076em;"><span style="top:-2.1704em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal">p</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9396em;"><span style="top:-3.3486em;margin-right:0.05em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mopen nulldelimiter sizing reset-size3 size6"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8443em;"><span style="top:-2.656em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.0037em;">α</span></span></span></span><span style="top:-3.2255em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line mtight" style="border-bottom-width:0.049em;"></span></span><span style="top:-3.384em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.344em;"><span></span></span></span></span></span><span class="mclose nulldelimiter sizing reset-size3 size6"></span></span></span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathrm mtight">m</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.0796em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span>
+
+        <p>где
+            <!-- \alpha = log_45 -->
+            <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>=</mo><mi>l</mi><mi>o</mi><msub><mi>g</mi><mn>4</mn></msub><mn>5</mn></mrow><annotation encoding="application/x-tex">\alpha = log_45
+            </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">4</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord">5</span></span></span></span>
+
+            — <a href="https://en.wikipedia.org/wiki/Shape_parameter">коэффициент формы</a> распределения Парето (индекс Парето),<br>
+
+            <!-- x_m = 1 -->
+            <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mi>m</mi></msub><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">x_m = 1
+            </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">m</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span></span></span></span>
+
+            — <a href="https://en.wikipedia.org/wiki/Scale_parameter">коэффициент масштаба</a>.
+        </p>
+        <p>Можно заметить, что график изображён не полностью (ограничен
+            по вертикальной оси), так как ближе к 1 он стремится к бесконечности. </p>
+        <p>Процент под графиком —
+            <a href="https://en.wikipedia.org/wiki/Lorenz_curve">функция (кривой) Лоренца</a> <a href="#link-3">[3]</a> — показывает, какую часть
+            площади под графиком занимает выделенная область:
+        </p>
+
+        <!-- L(F)={\frac {\int _{0}^{x}t\,f(t)\,dt}{\int _{0}^{\infty }t\,f(t)\,dt}}={\frac  {\int _{0}^{F}x(F_{1})\,dF_{1}}{\int _{0}^{1}x(F_{1})\,dF_{1}}} -->
+        <span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>L</mi><mo stretchy="false">(</mo><mi>F</mi><mo stretchy="false">)</mo><mo>=</mo><mfrac><mrow><msubsup><mo>∫</mo><mn>0</mn><mi>x</mi></msubsup><mi>t</mi><mtext> </mtext><mi>f</mi><mo stretchy="false">(</mo><mi>t</mi><mo stretchy="false">)</mo><mtext> </mtext><mi>d</mi><mi>t</mi></mrow><mrow><msubsup><mo>∫</mo><mn>0</mn><mi mathvariant="normal">∞</mi></msubsup><mi>t</mi><mtext> </mtext><mi>f</mi><mo stretchy="false">(</mo><mi>t</mi><mo stretchy="false">)</mo><mtext> </mtext><mi>d</mi><mi>t</mi></mrow></mfrac><mo>=</mo><mfrac><mrow><msubsup><mo>∫</mo><mn>0</mn><mi>F</mi></msubsup><mi>x</mi><mo stretchy="false">(</mo><msub><mi>F</mi><mn>1</mn></msub><mo stretchy="false">)</mo><mtext> </mtext><mi>d</mi><msub><mi>F</mi><mn>1</mn></msub></mrow><mrow><msubsup><mo>∫</mo><mn>0</mn><mn>1</mn></msubsup><mi>x</mi><mo stretchy="false">(</mo><msub><mi>F</mi><mn>1</mn></msub><mo stretchy="false">)</mo><mtext> </mtext><mi>d</mi><msub><mi>F</mi><mn>1</mn></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">L(F)={\frac {\int _{0}^{x}t\,f(t)\,dt}{\int _{0}^{\infty }t\,f(t)\,dt}}={\frac  {\int _{0}^{F}x(F_{1})\,dF_{1}}{\int _{0}^{1}x(F_{1})\,dF_{1}}}
+        </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">L</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.13889em;">F</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.7102em;vertical-align:-1.1051em;"></span><span class="mord"><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.6051em;"><span style="top:-2.2507em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mop"><span class="mop op-symbol small-op" style="margin-right:0.19445em;position:relative;top:-0.0006em;">∫</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8593em;"><span style="top:-2.3442em;margin-left:-0.1945em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">0</span></span></span></span><span style="top:-3.2579em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∞</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.3558em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">t</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mopen">(</span><span class="mord mathnormal">t</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">d</span><span class="mord mathnormal">t</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.7458em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mop"><span class="mop op-symbol small-op" style="margin-right:0.19445em;position:relative;top:-0.0006em;">∫</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8593em;"><span style="top:-2.3442em;margin-left:-0.1945em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">0</span></span></span></span><span style="top:-3.2579em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">x</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.3558em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">t</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mopen">(</span><span class="mord mathnormal">t</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">d</span><span class="mord mathnormal">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.1051em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:3.0369em;vertical-align:-1.2548em;"></span><span class="mord"><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.7821em;"><span style="top:-2.1372em;"><span class="pstrut" style="height:3.0362em;"></span><span class="mord"><span class="mop"><span class="mop op-symbol small-op" style="margin-right:0.19445em;position:relative;top:-0.0006em;">∫</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.009em;"><span style="top:-2.3442em;margin-left:-0.1945em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">0</span></span></span></span><span style="top:-3.2579em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.3558em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">x</span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">F</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">d</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">F</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.2662em;"><span class="pstrut" style="height:3.0362em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.7821em;"><span class="pstrut" style="height:3.0362em;"></span><span class="mord"><span class="mop"><span class="mop op-symbol small-op" style="margin-right:0.19445em;position:relative;top:-0.0006em;">∫</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.0362em;"><span style="top:-2.3442em;margin-left:-0.1945em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">0</span></span></span></span><span style="top:-3.2579em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">F</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.3558em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">x</span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">F</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">d</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">F</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.2548em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></span>
     </section>
 
     <section class="content" id="resources">
-        <h2>Interesting links</h2>
+        <h2>Ссылки</h2>
         <ol>
-            <li id="link-1"><a href="https://en.wikipedia.org/wiki/Pareto_distribution">Pareto distribution - Wikipedia</a></li>
-            <li id="link-2"><a href="https://en.wikipedia.org/wiki/Quantile_function">Quantile function - Wikipedia</a></li>
-            <li><a href="http://baz">baz</a></li>
+            <li id="link-1">Оригинальная публикация Вильфредо Парето, в которой упоминается его наблюдение:<br>
+                Vilfredo Pareto, Cours d&#x27;économie politique professé à l&#x27;université de Lausanne, 3 volumes, 1896–7
+            </li>
+            <li id="link-2">Хорошее объяснение квантилей и квантиль-функции:<br>
+                Taboga, Marco (2021). &quot;Quantile of a probability distribution&quot;, Lectures on probability theory and
+                mathematical statistics. Kindle Direct Publishing. Online appendix.
+                <a href="https://www.statlect.com/fundamentals-of-probability/quantile">https://www.statlect.com/fundamentals-of-probability/quantile</a>.
+            </li>
+            <li id="link-3">Про кривую Лоренца:<br>
+                Lorenz, M. O. (1905). &quot;Methods of measuring the concentration of wealth&quot;. <em>Publications of the
+                    American Statistical Association</em>. Publications of the American Statistical Association, Vol. 9, No.
+                70. 9 (70): 209–219.
+            </li>
+            <li id="link-4">Научно-популярное видео:<br>
+                The Zipf Mystery - VSauce - YouTube
+                <a href="https://youtu.be/fCn8zs912OE">https://youtu.be/fCn8zs912OE</a>
+            </li>
         </ol>
     </section>
 
     <section class="content" id="author">
-        <p>Made by <a href="https://www.sprkweb.dev">Vadim Saprykin</a>.</p>
-        <p>The text on this page is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</p>
-    </section> -->
+        <p>Сделал <a href="https://www.sprkweb.dev">Вадим Сапрыкин</a>.</p>
+        <p>Текст на этой странице доступен по <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">лицензии Creative Commons «Attribution» («Атрибуция») 4.0 Всемирная</a>.</p>
+    </section>
 </body>
 </html>
