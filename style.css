@@ -37,6 +37,21 @@ li {
     padding: 1em;
 }
 
+.header {
+    display: grid;
+    grid-template-columns: 1fr max-content 1fr;
+    align-items: center;
+}
+
+.header h1 {
+    grid-column: 2 / 3;
+}
+
+.header .lang-links {
+    font-family: var(--font-family-sans);
+    text-align: right;
+}
+
 .show-more-link, .show-more-link:active, .show-more-link:visited {
     color: inherit;
     text-decoration: none;
