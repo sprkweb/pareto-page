@@ -203,6 +203,8 @@ class VerticalDivider {
     _updatePos (x) {
         this._updateElemsPos(x)
         this.#pos = x / this._width
+        if (this.#pos > 1) this.#pos = 1
+        if (this.#pos < 0) this.#pos = 0
         this.onUpdatePos(this.#pos)
     }
 
