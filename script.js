@@ -148,6 +148,7 @@ class Graph {
 class VerticalDivider {
     #pos;
     #svgElem;
+    #svgElemPos;
     onUpdatePos = () => {};
 
     constructor (svgElem, defaultPos) {
@@ -165,6 +166,7 @@ class VerticalDivider {
         this._elemLine.setAttribute('y2', height + legendHeight)
         this._updateElemsPos(x)
         this._width = width
+        this.#svgElemPos = this.#svgElem.getBoundingClientRect()
     }
 
     _createElem () {
@@ -192,6 +194,9 @@ class VerticalDivider {
             if (drag) {
                 this._updatePos(e.offsetX)
             }
+        })
+        this.#svgElem.addEventListener('touchmove', (e) => {
+            this._updatePos(e.targetTouches[0].clientX - this.#svgElemPos.x)
         })
     }
 
